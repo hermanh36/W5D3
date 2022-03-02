@@ -59,4 +59,17 @@ class QuestionFollows
         id = ?
     SQL
   end
+
+  def followers_for_question_id(question_id)
+    QuestionsDatabase.instance.execute(<<-SQL, question_id)
+    SELECT
+      fname,lname
+    FROM
+      users
+    JOIN
+      questions ON users.id = questions.author_id
+    WHERE
+      questions.id = ?
+  SQL
+  end
 end
