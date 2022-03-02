@@ -1,13 +1,14 @@
 require_relative 'questions_db'
+require_relative 'replies'
 
 class Questions
   attr_accessor :id, :author_id, :title, :body
   def self.all
     data = QuestionsDatabase.instance.execute("SELECT * FROM questions")
-    data.map { |datam| Play.new(datum)}
+    data.map { |datam| Questions.new(datam)}
   end
 
-  def self.find_by_id
+  def self.find_by_id(id)
     data = QuestionsDatabase.instance.execute(<<-SQL, id)
       SELECT
         *
@@ -19,7 +20,7 @@ class Questions
     Questions.new(data.first)
   end
 
-  def self.find_by_author_id
+  def self.find_by_author_id(author_id)
     data = QuestionsDatabase.instance.execute(<<-SQL, author_id)
       SELECT
         *
@@ -31,8 +32,7 @@ class Questions
     Questions.new(data.first)
   end
 
-  def initialize(options )
-    super('questions.db')
+  def initialize(options)
     @id = options['id']
     @title = options['title']
     @body = options['body']
@@ -60,5 +60,19 @@ class Questions
       WHERE
         id = ?
     SQL
+  end
+  def author 
+    QuestionsDatabase.instance.execute(<<-SQL, self.author_id)
+    SELECT
+      fname,lname
+    FROM
+      users
+    WHERE
+      id = ?
+  SQL
+  end
+
+  def replies
+    Replies.find_by_questions_id(self.id)
   end
 end

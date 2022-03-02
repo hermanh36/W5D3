@@ -1,4 +1,6 @@
 require_relative "questions_db"
+require_relative "questions.rb"
+require_relative "replies"
 
 class Users
   attr_accessor :id, :fname, :lname
@@ -60,5 +62,13 @@ class Users
         (?, ?)
     SQL
     self.id =  QuestionsDatabase.instance.last_insert_row_id
+  end
+
+  def authored_questions
+    Questions.find_by_author_id(self.id)
+  end
+      
+  def authored_replies
+    Replies.find_by_users_id(self.id)
   end
 end
