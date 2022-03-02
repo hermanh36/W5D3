@@ -84,4 +84,37 @@ class Replies
       id = ?
   SQL
   end
+
+  def question
+      QuestionsDatabase.instance.execute(<<-SQL, self.questions_id)
+    SELECT
+      title, body
+    FROM
+      questions
+    WHERE
+      id = ?
+  SQL
+  end
+
+  def parent_reply
+     QuestionsDatabase.instance.execute(<<-SQL, self.parents_id)
+    SELECT
+      body_reply
+    FROM
+      replies
+    WHERE
+      id = ?
+  SQL
+  end
+
+  def child_reply
+    QuestionsDatabase.instance.execute(<<-SQL, self.id)
+    SELECT
+      body_reply
+    FROM
+      replies
+    WHERE
+      parents_id = ?
+  SQL
+  end
 end
